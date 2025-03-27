@@ -1,6 +1,7 @@
 package com.musinsa.backend.web.rest;
 
 import com.musinsa.backend.config.MetadataComponent;
+import com.musinsa.backend.domain.Category;
 import com.musinsa.backend.domain.Metadata;
 import com.musinsa.backend.domain.Product;
 import com.musinsa.backend.service.ProductService;
@@ -11,7 +12,9 @@ import com.musinsa.backend.web.rest.dto.ProductDeleteDTO;
 import com.musinsa.backend.web.rest.dto.ResultDTO;
 import com.musinsa.backend.web.rest.mapper.ProductMapper;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
@@ -46,7 +49,8 @@ public class ProductController {
     Product product = productService.save(productMapper.toEntity(dto));
     List<Product> productList = metadataComponent.get().productList();
     productList.add(product);
-    metadataComponent.set(new Metadata(productList));
+    Map<Category, List<Product>> collectByCategory = productList.stream().collect(Collectors.groupingBy(Product::getCategory));
+    metadataComponent.set(new Metadata(productList, collectByCategory));
     return ResponseEntity.ok().body(ResultDTO.success(productMapper.toDto(product)));
   }
 
@@ -61,7 +65,8 @@ public class ProductController {
     List<Product> productList = metadataComponent.get().productList();
     productList.remove(product);
     productList.add(product);
-    metadataComponent.set(new Metadata(productList));
+    Map<Category, List<Product>> collectByCategory = productList.stream().collect(Collectors.groupingBy(Product::getCategory));
+    metadataComponent.set(new Metadata(productList, collectByCategory));
     return ResponseEntity.ok().body(ResultDTO.success(productMapper.toDto(product)));
   }
 
@@ -75,7 +80,8 @@ public class ProductController {
     productService.delete(dto.brand(), dto.category());
     List<Product> productList = metadataComponent.get().productList();
     productList.remove(opt.get());
-    metadataComponent.set(new Metadata(productList));
+    Map<Category, List<Product>> collectByCategory = productList.stream().collect(Collectors.groupingBy(Product::getCategory));
+    metadataComponent.set(new Metadata(productList, collectByCategory));
     return ResponseEntity.ok().body(ResultDTO.success(new CommonDTO("ok")));
   }
 

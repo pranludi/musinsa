@@ -6,6 +6,8 @@ import com.musinsa.backend.domain.Product;
 import com.musinsa.backend.service.ProductService;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.stereotype.Component;
 
@@ -106,7 +108,9 @@ public class Startup implements InitializingBean {
     productList.add(new Product("I", Category.ACCESSORY, 2_400));
 
     productService.productSetup(productList);
-    metadataComponent.set(new Metadata(productList));
+
+    Map<Category, List<Product>> collectByCategory = productList.stream().collect(Collectors.groupingBy(Product::getCategory));
+    metadataComponent.set(new Metadata(productList, collectByCategory));
   }
 
 }

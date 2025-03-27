@@ -69,4 +69,13 @@ public class Product implements Serializable {
   public int hashCode() {
     return Objects.hash(brand, category);
   }
+
+  @Override
+  public String toString() {
+    return "Product{" +
+      "brand='" + brand + '\'' +
+      ", category=" + category +
+      ", price=" + price +
+      '}';
+  }
 }
