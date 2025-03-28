@@ -13,6 +13,10 @@ import com.musinsa.backend.web.rest.dto.ResultDTO;
 import com.musinsa.backend.web.rest.dto.SearchDTO;
 import com.musinsa.backend.web.rest.dto.SearchResultDTO;
 import com.musinsa.backend.web.rest.mapper.ProductCategoryMapper;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.Parameters;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -26,6 +30,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+@Tag(name = "서비스")
 @RestController
 @RequestMapping("/api")
 public class ServiceController {
@@ -40,7 +45,7 @@ public class ServiceController {
     this.productCategoryMapper = productCategoryMapper;
   }
 
-  // 1. 카테고리 별 최저가격 브랜드와 상품 가격, 총액을 조회하는 API
+  @Operation(summary = "1. 카테고리 별 최저가격 브랜드와 상품 가격, 총액을 조회하는 API")
   @GetMapping("/category/lowest-price")
   public ResponseEntity categoryLowestPrice() {
     Metadata metadata = metadataComponent.get();
@@ -61,7 +66,7 @@ public class ServiceController {
     return ResponseEntity.ok().body(ResultDTO.success(new CategoryLowestPriceDTO(selectedProductList, totalPrice)));
   }
 
-  // 2. 단일 브랜드로 모든 카테고리 상품을 구매할 때 최저가격에 판매하는 브랜드와 카테고리의 상품가격, 총액을 조회하는 API
+  @Operation(summary = "2. 단일 브랜드로 모든 카테고리 상품을 구매할 때 최저가격에 판매하는 브랜드와 카테고리의 상품가격, 총액을 조회하는 API")
   @GetMapping("/brand/lowest-price")
   public ResponseEntity brandLowestPrice() {
     Metadata metadata = metadataComponent.get();
@@ -84,7 +89,10 @@ public class ServiceController {
     return ResponseEntity.ok().body(ResultDTO.success(new BrandLowestPriceDTO(lowestPriceBrand, productCategoryDTOList, brandSum)));
   }
 
-  // 3. 카테고리 이름으로 최저, 최고 가격 브랜드와 상품 가격을 조회하는 API
+  @Operation(summary = "3. 카테고리 이름으로 최저, 최고 가격 브랜드와 상품 가격을 조회하는 API")
+  @Parameters(value = {
+    @Parameter(name = "category", description = "카테고리")
+  })
   @PostMapping("/search/lowest-price")
   public ResponseEntity lowestPriceByCategory(@RequestBody SearchDTO dto) {
     Metadata metadata = metadataComponent.get();
