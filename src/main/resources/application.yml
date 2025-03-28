@@ -4,8 +4,8 @@ spring:
   datasource:
     hikari:
       driver-class-name: org.h2.Driver
-      #      jdbc-url: 'jdbc:h2:mem:musinsa'
-      jdbc-url: 'jdbc:h2:tcp://localhost/~/musinsa'
+      jdbc-url: 'jdbc:h2:mem:musinsa'
+      #jdbc-url: 'jdbc:h2:tcp://localhost/~/musinsa'
       username: sa
       password:
   h2:
