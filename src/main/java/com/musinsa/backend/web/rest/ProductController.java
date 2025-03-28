@@ -2,6 +2,7 @@ package com.musinsa.backend.web.rest;
 
 import com.musinsa.backend.config.MetadataComponent;
 import com.musinsa.backend.domain.Product;
+import com.musinsa.backend.service.MetadataService;
 import com.musinsa.backend.service.ProductService;
 import com.musinsa.backend.web.errors.ErrorConstants;
 import com.musinsa.backend.web.rest.dto.CommonDTO;
@@ -29,12 +30,12 @@ public class ProductController {
 
   private final Logger logger = LoggerFactory.getLogger(ProductController.class);
 
-  private final MetadataComponent metadataComponent;
+  private final MetadataService metadataService;
   private final ProductMapper productMapper;
   private final ProductService productService;
 
-  public ProductController(MetadataComponent metadataComponent, ProductService productService, ProductMapper productMapper) {
-    this.metadataComponent = metadataComponent;
+  public ProductController(MetadataService metadataService, ProductService productService, ProductMapper productMapper) {
+    this.metadataService = metadataService;
     this.productService = productService;
     this.productMapper = productMapper;
   }
@@ -51,7 +52,8 @@ public class ProductController {
     if (opt.isPresent()) {
       return ResponseEntity.ok().body(ResultDTO.failure(ErrorConstants.AlreadyExist, "이미 존재하는 상품입니다."));
     }
-    Product product = productService.add(productMapper.toEntity(dto));
+    Product product = productService.save(productMapper.toEntity(dto));
+    metadataService.add(product);
     return ResponseEntity.ok().body(ResultDTO.success(productMapper.toDto(product)));
   }
 
@@ -67,7 +69,8 @@ public class ProductController {
     if (opt.isEmpty()) {
       return ResponseEntity.ok().body(ResultDTO.failure(ErrorConstants.NotFound, "해당 상품이 없습니다."));
     }
-    Product product = productService.update(productMapper.toEntity(dto));
+    Product product = productService.save(productMapper.toEntity(dto));
+    metadataService.update(product);
     return ResponseEntity.ok().body(ResultDTO.success(productMapper.toDto(product)));
   }
 
@@ -83,6 +86,7 @@ public class ProductController {
       return ResponseEntity.ok().body(ResultDTO.failure(ErrorConstants.NotFound, "해당 상품이 없습니다."));
     }
     productService.delete(opt.get());
+    metadataService.delete(opt.get());
     return ResponseEntity.ok().body(ResultDTO.success(new CommonDTO("ok")));
   }
 
